@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0ead6;
+        }
+
+        h1 {
+            color: #004080;
+        }
+
+        .board {
+            background-color: #deb887;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 5px solid #8b4513;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 100px;
+            font-size: 2em;
+            cursor: pointer;
+        }
+
+        .x {
+            color: #0000ff;
+        }
+
+        .o {
+            color: #ff0000;
+        }
+
+        .win {
+            background-color: #f08080;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        button {
+            background-color: #deb887;
+            font-size: 1.5em;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            border: 2px solid #8b4513;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #d2a371;
+        }
+
+        #turnDisplay {
+            color: #8b4513;
+        }
+    </style>
+</head>
+
+<body>
+    <h1><b>Tic Tac Toe</b></h1>
+    <div id="board" class="board">
+        <table>
+            <tr>
+                <td class="cell" id="0" onclick="makeMove(0)"></td>
+                <td class="cell" id="1" onclick="makeMove(1)"></td>
+                <td class="cell" id="2" onclick="makeMove(2)"></td>
+            </tr>
+            <tr>
+                <td class="cell" id="3" onclick="makeMove(3)"></td>
+                <td class="cell" id="4" onclick="makeMove(4)"></td>
+                <td class="cell" id="5" onclick="makeMove(5)"></td>
+            </tr>
+            <tr>
+                <td class="cell" id="6" onclick="makeMove(6)"></td>
+                <td class="cell" id="7" onclick="makeMove(7)"></td>
+                <td class="cell" id="8" onclick="makeMove(8)"></td>
+            </tr>
+        </table>
+    </div>
+    <h1 id="turnDisplay">Player X's Turn</h1>
+    <button onclick="resetBoard()">Reset</button>
+    <button onclick="StartNewGame()">New Game</button>
+
+    <script>
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let turn = "X";
+        let gameOver = false;
+
+        // Retrieve player names from local storage
+        let player1 = localStorage.getItem("player1") || "Player 1";
+        let player2 = localStorage.getItem("player2") || "Player 2";
+
+        function makeMove(position) {
+            if (!gameOver && board[position] === "") {
+                board[position] = turn;
+                document.getElementById(position).innerHTML = turn;
+                document.getElementById(position).classList.add(turn.toLowerCase());
+
+                checkWinner();
+
+                if (!gameOver && checkDraw()) {
+                    alert("It's a draw!");
+                    resetBoard();
+                } else {
+                    turn = turn === "X" ? "O" : "X";
+                    updateTurnDisplay();
+                }
+            }
+        }
+
+        function checkWinner() {
+            let lines = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            for (let line of lines) {
+                let [a, b, c] = line;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    document.getElementById(a).classList.add('win');
+                    document.getElementById(b).classList.add('win');
+                    document.getElementById(c).classList.add('win');
+                    gameOver = true;
+
+                    setTimeout(() => {
+                        alert(`${turn === "X" ? player2 : player1} wins!`)
+                    }, 150);
+                }
+            }
+        }
+        function StartNewGame() {
+            window.location.href = "Homepage-Semi-Game.html";
+        }
+
+        function resetBoard() {
+            for (let i = 0; i < 9; i++) {
+                board[i] = "";
+                document.getElementById(i.toString()).innerHTML = "";
+                document.getElementById(i.toString()).classList.remove('x', 'o', 'win');
+            }
+            turn = "X";
+            gameOver = false;
+            updateTurnDisplay();
+        }
+
+        function checkDraw() {
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === "") {
+                    return false;
+                }
+            }
+            gameOver = true;
+            return true;
+        }
+
+        function updateTurnDisplay() {
+            const turnDisplay = document.getElementById('turnDisplay');
+            turnDisplay.textContent = `Player ${turn === "X" ? player1 : player2}'s Turn`;
+        }
+    </script>
+</body>
+
+</html>
